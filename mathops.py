@@ -1,3 +1,6 @@
+import math
+
+
 def modInv(a, m):
     for x in range(1, m):
         if ((a % m) * (x % m)) % m == 1:
@@ -87,25 +90,28 @@ def binInv(a, f):
 
     return g1
 
+def binReduc(c, f, m):
+    print(f"Reducing: {c}...")
+    intC = int(c, 2)
+    intFz = int(fz, 2)
+
+    for i in range(len(c)-1, m-1, -1):
+        if (intC & (1<<i))>>i == 1:
+            k = i-m
+            intC = intC ^ (intFz<<k)
+
+    return bin(intC)[2:]
+
 
 if __name__ == '__main__':
-    print(modInv(26, 17))
-    print(binAdd("1010011", "11001010"))
-
     a1 = "1010011"
-    print(hex(int(a1, 2)))
     b1 = "11001010"
-    print(hex(int(b1, 2)))
-    print(binMult(a1, b1))
 
-    print(f"{a1} squared: {binSquare(a1)}")
+    fz = "100011011"
+    a1mulb1 = binMult(a1, b1)
 
-    d, g, h = eegcd(a1, b1)
-    print(f"d = {d}, g = {g}, h = {h}")
-
-    print(f"{binAdd(binMult(a1, g), binMult(b1, h))}")
-
-    binInv()
+    print("a1 * b1 = " + a1mulb1)
+    print(binReduc(a1mulb1, fz, 8))
 
 
 

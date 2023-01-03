@@ -102,9 +102,3 @@ def binReduc(c, fz, m):
             intC = intC ^ (intFz<<k)
 
     return bin(intC)[2:]
-
-
-
-
-
-

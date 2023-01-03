@@ -36,7 +36,7 @@ def binSquare(a):
         c = 1
     elif a[0] == '0':
         c = 0
-    for i in range(1, len(a)-1):
+    for i in range(1, len(a)):
         c = c<<2
         if a[i] == '1':
             c = c^1
@@ -80,7 +80,7 @@ def binInv(a, f):
 
     while u != '1':
         j = len(u) - len(v)
-        if j<0:
+        if j < 0:
             u, v = v, u
             g1, g2 = g2, g1
             j = -j
@@ -90,8 +90,9 @@ def binInv(a, f):
 
     return g1
 
-def binReduc(c, f, m):
-    print(f"Reducing: {c}...")
+
+def binReduc(c, fz, m):
+    # print(f"Reducing: {c}...")
     intC = int(c, 2)
     intFz = int(fz, 2)
 
@@ -102,16 +103,6 @@ def binReduc(c, f, m):
 
     return bin(intC)[2:]
 
-
-if __name__ == '__main__':
-    a1 = "1010011"
-    b1 = "11001010"
-
-    fz = "100011011"
-    a1mulb1 = binMult(a1, b1)
-
-    print("a1 * b1 = " + a1mulb1)
-    print(binReduc(a1mulb1, fz, 8))
 
 
 

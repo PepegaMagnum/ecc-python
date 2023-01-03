@@ -1,4 +1,5 @@
 import mathops
+import Point
 
 
 class EllipticCurve:
@@ -20,7 +21,7 @@ class EllipticCurve:
         x2 = pointQ.x
         y2 = pointQ.y
         
-        if x1 == x2:
+        if pointP != pointQ:
             m = ((3*x1**2) % self.p)*mathops.modInv(2*y1, self.p)
         else:
             m = ((y2-y1) % self.p)*mathops.modInv(x2-x1, self.p)
@@ -44,27 +45,21 @@ class EllipticCurve:
         return result
 
 
-class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-
-if __name__ == '__main__':
-    curve = EllipticCurve(0, 7, 17)
-    point1 = Point(15, 13)
-    point2 = Point(1, 1)
-    curve.doesPointBelongToCurve(point1)
-    curve.doesPointBelongToCurve(point2)
-
-    point3 = curve.pointAddition(point1, point1)
-
-    print(f"Point doubling: ({point3.x},{point3.y})")
-    
-    curve.doesPointBelongToCurve(point3)
-
-    point4 = curve.pointMultiplication(point1, 2)
-
-    print(f"Point multiplication: ({point4.x},{point4.y})")
-    curve.doesPointBelongToCurve(point4)
+# if __name__ == '__main__':
+#     curve = EllipticCurve(0, 7, 17)
+#     point1 = Point(15, 13)
+#     point2 = Point(1, 1)
+#     curve.doesPointBelongToCurve(point1)
+#     curve.doesPointBelongToCurve(point2)
+#
+#     point3 = curve.pointAddition(point1, point1)
+#
+#     print(f"Point doubling: ({point3.x},{point3.y})")
+#
+#     curve.doesPointBelongToCurve(point3)
+#
+#     point4 = curve.pointMultiplication(point1, 2)
+#
+#     print(f"Point multiplication: ({point4.x},{point4.y})")
+#     curve.doesPointBelongToCurve(point4)
 

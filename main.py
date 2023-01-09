@@ -1,33 +1,67 @@
 from binaryFieldCurve import BinaryFieldCurve
+from ellipticCurve import EllipticCurve
 from Point import Point
-
+from time import time
 
 def main():
-    bincurve = BinaryFieldCurve(m=4, a="1000", b="1001", f="10011")
-    p1 = Point("10", "1111")
-    p1neg = bincurve.pointNeg(p1)
+    # Curve K-163
+    print("Tests for binary field curve")
 
-    bincurve.doesPointBelongToCurve(p1neg)
+    f = bin((1<<163)+int("11001001", 2))[2:]
+    k163 = BinaryFieldCurve(163, "1", "1", f)
+    xhex = "02fe13c0537bbc11acaa07d793de4e6d5e5c94eee8"
+    yhex = "0289070fb05d38ff58321f2e800536d538ccdaa3d9"
 
-    print(f"Point negation ({p1.x}, {p1.y}) = ({p1neg.x}, {p1neg.y})")
+    xint = int(xhex, 16)
+    yint = int(yhex, 16)
 
-    p2 = Point("1100", "1100")
-    p3 = Point("0000", "0001")
+    xbin = bin(xint)[2:]
+    ybin = bin(yint)[2:]
 
+    print(f"Size of x: {len(xbin)}")
+    print(f"Size of y: {len(ybin)}")
 
-    bincurve.doesPointBelongToCurve(p1)
-    bincurve.doesPointBelongToCurve(p2)
-    bincurve.doesPointBelongToCurve(p3)
+    g1 = Point(xbin, ybin)
 
-    p4 = bincurve.pointAdd(p1, p2)
+    k163.doesPointBelongToCurve(g1)
 
-    p5 = bincurve.pointDoubling(p1)
+    start_time1 = time()
+    gmult1 = k163.pointMult(g1, 527574552913502057555925363579252593380607059037)
+    end_time1 = time()
 
+    print("Multiplication time: " + str(end_time1-start_time1) + " seconds")
+    print(f"Size of result x: {len(gmult1.x)}")
+    print(f"Size of result y: {len(gmult1.y)}")
 
-    twop1 = bincurve.pointMult(p1, 2)
-    p1double = bincurve.pointDoubling(p1)
-    print(f"2p1 = ({twop1.x}, {twop1.y})")
-    print(f"2p1 = ({p1double.x}, {p1double.y})")
+    k163.doesPointBelongToCurve(gmult1)
+
+    # secp192k1
+    print("\nTests for prime field curve")
+
+    phex = "fffffffffffffffffffffffffffffffffffffffeffffee37"
+    pint = int(phex, 16)
+    secp192k1 = EllipticCurve(0, 3, pint)
+
+    g2 = Point(int("db4ff10ec057e9ae26b07d0280b7f4341da5d1b1eae06c7d", 16),
+              int("9b2f2f6d9c5628a7844163d015be86344082aa88d95e2f9d", 16))
+
+    size_of_x_g2 = len(bin(g2.x)[2:])
+    size_of_y_g2 = len(bin(g2.y)[2:])
+
+    print(f"size of x: {size_of_x_g2}")
+    print(f"size of x: {size_of_y_g2}")
+
+    secp192k1.doesPointBelongToCurve(g2)
+
+    start_time2 = time()
+    gmult2 = secp192k1.pointMultiplication(g2, 527574552913502057555925363579252593380607059037)
+    end_time2 = time()
+
+    secp192k1.doesPointBelongToCurve(gmult2)
+
+    print("Multiplication time: " + str(end_time2 - start_time2) + " seconds")
+    print(f"Size of result x: {len(bin(gmult2.x)[2:])}")
+    print(f"Size of result y: {len(bin(gmult2.y)[2:])}")
 
 
 if __name__ == "__main__":

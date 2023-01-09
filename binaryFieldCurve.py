@@ -23,9 +23,9 @@ class BinaryFieldCurve:
         equation = mathops.binAdd(mathops.binAdd(mathops.binAdd(mathops.binAdd(y2, xy), x3), ax2), self.b)
 
         if equation == '0':
-            print(f"Point ({point.x},{point.y}) belongs to the curve: y^2 + xy = x3 + ({self.a})x^2 + ({self.b})")
+            print(f"Point ({hex(int(point.x, 2))},{hex(int(point.y, 2))}) belongs to the curve: y^2 + xy = x3 + ({self.a})x^2 + ({self.b})")
         else:
-            print(f"Point ({point.x},{point.y}) does not belongs to the curve: y^2 + xy = x3 + ({self.a})x^2 + ({self.b})")
+            print(f"Point ({hex(int(point.x, 2))},{hex(int(point.y, 2))}) does not belongs to the curve: y^2 + xy = x3 + ({self.a})x^2 + ({self.b})")
 
     def pointNeg(self, p):
         result = mathops.binAdd(p.x, p.y)

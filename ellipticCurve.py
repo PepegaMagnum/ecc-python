@@ -18,10 +18,11 @@ class EllipticCurve:
 
     def pointNegation(self, point):
         return Point(point.x, -point.y)
+        x1 = pointP.x
 
     def pointAddition(self, pointP, pointQ):
-        x1 = pointP.x
         y1 = pointP.y
+        x1 = pointP.x
         
         x2 = pointQ.x
         y2 = pointQ.y
@@ -46,33 +47,12 @@ class EllipticCurve:
         return result
 
     def pointMultiplication(self, point, n):
-        result = point
+        n_bin = bin(n)[2:]
+        q = point_inf
 
-        if n == 1:
-            return result
+        for i in range(len(n_bin)-1, -1, -1):
+            if n_bin[i] == '1':
+                q = self.pointAddition(q, point)
+            point = self.pointAddition(point, point)
 
-        for x in range(1, n):
-            result = self.pointAddition(result, point)
-
-        return result
-
-
-if __name__ == '__main__':
-    curve = EllipticCurve(0, 7, 17)
-    point1 = Point(15, 13)
-    point2 = Point(1, 1)
-
-    curve.doesPointBelongToCurve(point1)
-    curve.doesPointBelongToCurve(point2)
-
-    point3 = curve.pointAddition(point1, point1)
-
-    print(f"Point doubling: ({point3.x},{point3.y})")
-
-    curve.doesPointBelongToCurve(point3)
-
-    point4 = curve.pointMultiplication(point1, 2)
-
-    print(f"Point multiplication: ({point4.x},{point4.y})")
-    curve.doesPointBelongToCurve(point4)
-
+        return q

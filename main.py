@@ -1,11 +1,14 @@
 from binaryFieldCurve import BinaryFieldCurve
 from ellipticCurve import EllipticCurve
 from Point import Point
-from time import time
+import time
+import sys
 
 def main():
     # Curve K-163
     print("Tests for binary field curve")
+
+    k = 1000000000000 #int(sys.argv[1])
 
     f = bin((1<<163)+int("11001001", 2))[2:]
     k163 = BinaryFieldCurve(163, "1", "1", f)
@@ -25,11 +28,13 @@ def main():
 
     k163.doesPointBelongToCurve(g1)
 
-    start_time1 = time()
-    gmult1 = k163.pointMult(g1, 527574552913502057555925363579252593380607059037)
-    end_time1 = time()
+    start_time1 = time.time_ns()
+    gmult1 = k163.pointMult(g1, k)
+    end_time1 = time.time_ns()
 
-    print("Multiplication time: " + str(end_time1-start_time1) + " seconds")
+    multiplication_time1 = end_time1 - start_time1
+
+    print(f"Multiplication time: {multiplication_time1 / (10 ** 9)} seconds")
     print(f"Size of result x: {len(gmult1.x)}")
     print(f"Size of result y: {len(gmult1.y)}")
 
@@ -53,13 +58,17 @@ def main():
 
     secp192k1.doesPointBelongToCurve(g2)
 
-    start_time2 = time()
-    gmult2 = secp192k1.pointMultiplication(g2, 527574552913502057555925363579252593380607059037)
-    end_time2 = time()
+    start_time2 = time.time_ns()
+    gmult2 = secp192k1.pointMultiplication(g2, k)
+    end_time2 = time.time_ns()
 
     secp192k1.doesPointBelongToCurve(gmult2)
 
-    print("Multiplication time: " + str(end_time2 - start_time2) + " seconds")
+    multiplication_time2 = end_time2 - start_time2
+    print(start_time2)
+    print(end_time2)
+
+    print(f"Multiplication time: {multiplication_time2/(10**9)} seconds")
     print(f"Size of result x: {len(bin(gmult2.x)[2:])}")
     print(f"Size of result y: {len(bin(gmult2.y)[2:])}")
 

@@ -38,34 +38,6 @@ def binSquare(a):
     return bin(c)[2:]
 
 
-def eegcd(a, b):
-    u = a
-    v = b
-
-    g1 = '1'
-    g2 = '0'
-    h1 = '0'
-    h2 = '1'
-
-    while u != '0':
-        j = len(u) - len(v)
-        if j < 0:
-            u, v = v, u
-            g1, g2 = g2, g1
-            h1, h2, = h2, h1
-            j = -j
-
-        zj = format(1 << j, "08b")
-        u = binAdd(u, binMult(zj, v))
-        g1 = binAdd(g1, binMult(zj, g2))
-        h1 = binAdd(h1, binMult(zj, h2))
-    d = v
-    g = g2
-    h = h2
-
-    return [d, g, h]
-
-
 def binInv(a, f):
     u = a
     v = f

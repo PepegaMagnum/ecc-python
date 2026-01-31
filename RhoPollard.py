@@ -1,9 +1,13 @@
 import math
 import random
+import time
 from random import randint
 from binaryFieldCurve import BinaryFieldCurve
-from mathops import modInv
+import mathops
 from math import gcd
+
+from mathops import binReduc
+
 
 def func_f(X_i, P, Q, curve):
     try:
@@ -13,11 +17,11 @@ def func_f(X_i, P, Q, curve):
         print("Podane punkty nie naleza do krzywej")
         return None
 
-    if int(X_i.x,2) % 3 == 2:
-        return curve.pointAdd(X_i, Q)
     if int(X_i.x,2) % 3 == 0:
-        return curve.pointMult(X_i, 2)
+        return curve.pointAdd(X_i, Q)
     if int(X_i.x,2) % 3 == 1:
+        return curve.pointMult(X_i, 2)
+    if int(X_i.x,2) % 3 == 2:
         return curve.pointAdd(X_i, P)
     else:
         print("Error")
@@ -32,11 +36,11 @@ def func_g(a, P, X_i, curve, n):
         return None
 
     if int(X_i.x, 2) % 3 == 2:
-        return a
-    if int(X_i.x, 2) % 3 == 0:
-        return 2 * a % n
+        return mathops.binAdd(a, bin(1))
     if int(X_i.x, 2) % 3 == 1:
-        return (a + 1) % n
+        return binReduc(mathops.binMult(bin(2), a), curve.f, curve.m)
+    if int(X_i.x, 2) % 3 == 0:
+        return binReduc(mathops.binAdd(a, bin(1)), curve.f, curve.m)
     else:
         print("Error")
         return None
@@ -48,12 +52,12 @@ def func_h(b, P, X_i, curve, n):
         print("Podane punkty nie naleza do krzywej")
         return None
 
-    if int(X_i.x, 2) % 3 == 2:
-        return (b+1) % n
     if int(X_i.x, 2) % 3 == 0:
-        return 2*b % n
+        return mathops.binAdd(b, bin(1)[2:])
     if int(X_i.x, 2) % 3 == 1:
-        return (b + 1) % n
+        return binReduc(mathops.binMult(b, bin(2)[2:]), curve.f, curve.m)
+    if int(X_i.x, 2) % 3 == 2:
+        return binReduc(mathops.binAdd(b, bin(1)[2:]), curve.f, curve.m)
     else:
         print("Error")
         return None
@@ -66,19 +70,19 @@ def pollardRho(curve, P, Q, n):
         print("Podane punkty nie naleza do krzywej")
         return None
 
-
+    start = time.time()
     for j in range(3):
         #random.seed(j)
-        a_i = randint(0, n-1)
-        b_i = randint(0, n-1)
-        a_2i = randint(0, n-1)
-        b_2i = randint(0, n-1)
+        a_i = bin(randint(0, n-1))[2:]
+        b_i = bin(randint(0, n-1))[2:]
+        a_2i = bin(randint(0, n-1))[2:]
+        b_2i = bin(randint(0, n-1))[2:]
 
-        X_i = curve.pointAdd(curve.pointMult(P,a_i), curve.pointMult(Q,b_i))
-        X_2i = curve.pointAdd(curve.pointMult(P,a_2i),curve.pointMult(Q,b_2i))
+        X_i = curve.pointAdd(curve.pointMult(P, int(a_i, 2)), curve.pointMult(Q,int(b_i, 2)))
+        X_2i = curve.pointAdd(curve.pointMult(P, int(a_2i,2)),curve.pointMult(Q,int(b_2i),))
 
         i = 1
-        while i <= n:
+        while i <= math.floor(math.sqrt(n)):
             print(f"Iteracja: {i}")
             a_i = func_g(a_i, P, X_i, curve, n)
             b_i = func_h(b_i, P, X_i, curve, n)
@@ -92,8 +96,10 @@ def pollardRho(curve, P, Q, n):
                 print("Ding! Ding! Ding!")
                 if b_i == b_2i:
                     break
-                assert gcd(b_2i - b_i, n) == 1, f"gcd z ({b_2i - b_i}) i {n} nie jest rowne 1"
-                return ((a_i - a_2i) * modInv(b_2i - b_i, n)) % n
+                stop = time.time()
+                print(f"Algorithm took {stop - start} seconds")
+                assert gcd(int(b_2i,2) - int(b_i,2), n)== 1, f"gcd z ({int(b_2i,2) - int(b_i,2)}) i {n} nie jest rowne 1"
+                return (int(a_i, 2) - int(a_2i, 2)) * mathops.modInv(int(b_2i, 2) - int(b_i, 2), n) % n
 
 
             else:

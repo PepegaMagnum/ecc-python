@@ -69,3 +69,30 @@ def binReduc(c, fz, m):
             intC = intC ^ (intFz<<k)
 
     return bin(intC)[2:]
+
+def binGcd(a, b):
+    assert a != "0" and b != "0"
+    assert len(b) > len(a)
+
+    u = a
+    v = b
+
+    g1 = '1'
+    g2 = '0'
+
+    h1 = '0'
+    h2 = '1'
+
+    while u != '0':
+        j = len(u) - len(v)
+        if j < 0:
+            u, v = v, u
+            g1, g2 = g2, g1
+            h1, h2 = h2, h1
+            j = -j
+
+        zj = format(1 << j, "08b")
+        u = binAdd(u, binMult(zj, v))
+        g1 = binAdd(g1, binMult(zj, g2))
+        h1 = binAdd(h1, binMult(zj, h2))
+

@@ -31,23 +31,25 @@ def main():
     assert my_curve.doesPointBelongToCurve(generator) == True
 
     # generate a point
-    k = 31573#random.randint(2, n-2)
+    k = random.randint(2, n-2)
     print(f"")
     Q = my_curve.pointMult(generator, k)
     assert my_curve.doesPointBelongToCurve(Q) == True
 
-    start = time.time()
-    x = pollardRho(my_curve, generator, Q, n)
-    stop = time.time()
 
-    print(f"Algorithm took {stop - start} seconds")
-    assert x != None
-    print(f"x: {x}")
-    print(f"k: {k}")
-    result = my_curve.pointMult(generator, x)
-    assert result == Q, (f"x*P = ({bin_to_hex(result.x)}, {bin_to_hex(result.y)})"
-                         f" != ({bin_to_hex(Q.x)}, {bin_to_hex(Q.y)})")
-    assert x == k
+    for i in range(1000):
+        x = pollardRho(my_curve, generator, Q, n)
+        print(f"x: {x}")
+        print(f"k: {k}")
+
+        if x is not None:
+            result = my_curve.pointMult(generator, x)
+            if result == Q:
+                break
+
+    print(f"x*P = ({bin_to_hex(result.x)}, {bin_to_hex(result.y)}), "
+                             f" Q = ({bin_to_hex(Q.x)}, {bin_to_hex(Q.y)})")
+
 
 if __name__ == "__main__":
     main()

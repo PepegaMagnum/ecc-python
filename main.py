@@ -1,77 +1,53 @@
-from binaryFieldCurve import BinaryFieldCurve
-from ellipticCurve import EllipticCurve
-from Point import Point
+import random
 import time
-import sys
+
+from binaryFieldCurve import BinaryFieldCurve
+from Point import Point
+from RhoPollard import pollardRho
+
+def hex_to_bin(hex_string):
+    return bin(int(hex_string, 16))[2:]
+
+def bin_to_hex(bin_string):
+    return hex(int(bin_string, 2))
 
 def main():
-    # Curve K-163
-    print("Tests for binary field curve")
+    # m = 32
+    # f = bin((1<<m)+int("10001101",2))[2:]
+    # my_curve = BinaryFieldCurve(m, bin(int("b46574af",16))[2:], bin(int("f6c71ed1",16))[2:], f)
+    # n = int("ffff1eaa",16)
+    # print(n)
 
-    k = 1000000000000 #int(sys.argv[1])
+    n = 65920
+    m = 16
+    f = bin((1<<m) + int("101011",2))[2:]
 
-    f = bin((1<<163)+int("11001001", 2))[2:]
-    k163 = BinaryFieldCurve(163, "1", "1", f)
-    xhex = "02fe13c0537bbc11acaa07d793de4e6d5e5c94eee8"
-    yhex = "0289070fb05d38ff58321f2e800536d538ccdaa3d9"
+    print(f)
 
-    xint = int(xhex, 16)
-    yint = int(yhex, 16)
+    my_curve = BinaryFieldCurve(m, hex_to_bin("2905"), hex_to_bin("886f"), f)
 
-    xbin = bin(xint)[2:]
-    ybin = bin(yint)[2:]
+    generator = Point(hex_to_bin("ba04"), hex_to_bin("9b3b"))
 
-    print(f"Size of x: {len(xbin)}")
-    print(f"Size of y: {len(ybin)}")
+    assert my_curve.doesPointBelongToCurve(generator) == True
 
-    g1 = Point(xbin, ybin)
+    # generate a point
+    k = 31573#random.randint(2, n-2)
+    print(f"")
+    Q = my_curve.pointMult(generator, k)
+    assert my_curve.doesPointBelongToCurve(Q) == True
 
-    k163.doesPointBelongToCurve(g1)
+    start = time.time()
+    x = pollardRho(my_curve, generator, Q, n)
+    stop = time.time()
 
-    start_time1 = time.time_ns()
-    gmult1 = k163.pointMult(g1, k)
-    end_time1 = time.time_ns()
-
-    multiplication_time1 = end_time1 - start_time1
-
-    print(f"Multiplication time: {multiplication_time1 / (10 ** 9)} seconds")
-    print(f"Size of result x: {len(gmult1.x)}")
-    print(f"Size of result y: {len(gmult1.y)}")
-
-    k163.doesPointBelongToCurve(gmult1)
-
-    # secp192k1
-    print("\nTests for prime field curve")
-
-    phex = "fffffffffffffffffffffffffffffffffffffffeffffee37"
-    pint = int(phex, 16)
-    secp192k1 = EllipticCurve(0, 3, pint)
-
-    g2 = Point(int("db4ff10ec057e9ae26b07d0280b7f4341da5d1b1eae06c7d", 16),
-              int("9b2f2f6d9c5628a7844163d015be86344082aa88d95e2f9d", 16))
-
-    size_of_x_g2 = len(bin(g2.x)[2:])
-    size_of_y_g2 = len(bin(g2.y)[2:])
-
-    print(f"size of x: {size_of_x_g2}")
-    print(f"size of x: {size_of_y_g2}")
-
-    secp192k1.doesPointBelongToCurve(g2)
-
-    start_time2 = time.time_ns()
-    gmult2 = secp192k1.pointMultiplication(g2, k)
-    end_time2 = time.time_ns()
-
-    secp192k1.doesPointBelongToCurve(gmult2)
-
-    multiplication_time2 = end_time2 - start_time2
-    print(start_time2)
-    print(end_time2)
-
-    print(f"Multiplication time: {multiplication_time2/(10**9)} seconds")
-    print(f"Size of result x: {len(bin(gmult2.x)[2:])}")
-    print(f"Size of result y: {len(bin(gmult2.y)[2:])}")
-
+    print(f"Algorithm took {stop - start} seconds")
+    assert x != None
+    print(f"x: {x}")
+    print(f"k: {k}")
+    result = my_curve.pointMult(generator, x)
+    assert result == Q, (f"x*P = ({bin_to_hex(result.x)}, {bin_to_hex(result.y)})"
+                         f" != ({bin_to_hex(Q.x)}, {bin_to_hex(Q.y)})")
+    assert x == k
 
 if __name__ == "__main__":
     main()
